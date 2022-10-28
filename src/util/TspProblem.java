@@ -1,4 +1,6 @@
-package util;public class TspProblem {
+package util;
+
+public class TspProblem {
     private int[] xCoors;
     private int[] yCoors;
     private int[][] distance; // ¾àÀë¾ØÕó

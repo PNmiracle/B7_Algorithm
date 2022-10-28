@@ -1,4 +1,8 @@
+package study;
+
+
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 public class Task3 {
