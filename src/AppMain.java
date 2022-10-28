@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class AppMain {
     public static void main(String[] args) throws IOException {
-        /*一共随机生成n + 2个点, 编号分别为[0...N-1], 其中0为B点(垃圾车起始点), n + 1为终点A(垃圾填埋点), 其他点为垃圾点.*/
+        /*一共随机生成n + 2个点, 编号分别为[0...N-1], 其中0为B点(垃圾车起始点), n + 1为终点A(垃圾填埋点), 其他点为垃圾点..*/
         System.out.println("请输入生成的垃圾桶的数目n: ");
         Scanner scanner = new Scanner(System.in);
         int n = scanner.nextInt();  //垃圾桶数目n
