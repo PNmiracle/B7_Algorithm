@@ -38,6 +38,7 @@ public class AppMain {
         int[] rout2 = sa.Sa_TSP(rout, T0, d, Tk, L);
         sa.print(rout2);
         long after_sa = System.currentTimeMillis();
-        System.out.println("\n模拟退火算法用时: " + (after_sa - before_sa) + "ms");
+        long total_time = after_sa - before_sa;
+        System.out.println("\n模拟退火算法用时: " + (total_time) + "ms");
     }
 }

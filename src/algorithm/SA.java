@@ -157,7 +157,7 @@ public class SA {
         System.out.println("\n总路径长度：" + cost(rout));
         System.out.print("总转运路径：" + rout[0] + "(起点B)");
         for (int i = 1; i < rout.length - 1; i++) {
-            System.out.print("->" + rout[i]);
+            System.out.print("->" + "垃圾桶" + rout[i]);
         }
         System.out.print("->" + rout[rout.length - 1] + "(终点A)" );
     }
