@@ -4,10 +4,7 @@ import util.TspProblem;
 import util.TspReader;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class SA {
 
@@ -16,22 +13,27 @@ public class SA {
     public SA(TspProblem problem) {
         this.problem = problem;
     }
-    /**给rout[1..n]赋值为[1...n]的不重复的序列,
-     * 每次选取之后就要收缩随机数的值域*/
-    public void build_random_sequence(int[] rout) {
-        int n = rout.length - 2;
+
+    /**
+     * 给rout[1..n]赋值为[1...n]的不重复的序列,
+     * 每次选取之后就要收缩随机数的值域
+     */
+    // rout.length - m - 1 = n
+    public void build_random_sequence(int[] rout, int m) {
+        int n = rout.length - m - 1;
         int[] numbers = new int[n];
         // numbers存放[1..n]
         for (int i = 0; i < n; i++) {
             numbers[i] = i + 1;
         }
-        for (int i = 1; i <= rout.length - 2; i++) {
+        int n_dup = n;
+        for (int i = 1; i <= n_dup; i++) {
             //Math.random() :[0, 1) 的double
             //r:[0..n - 1] 的整数
             int r = (int) (Math.random() * n);
             rout[i] = numbers[r];
             /**每次生成的下标是有可能重复的，但是由于numbers数组里该下标对应的值每抽中一次，
-            就被踢出去了（替换成了n-1位置上的值），所以最终结果并不会重复*/
+             就被踢出去了（替换成了n-1位置上的值），所以最终结果并不会重复*/
             numbers[r] = numbers[n - 1];
             n--;
         }
@@ -77,9 +79,14 @@ public class SA {
         int sum = 0;
         int[][] dist = problem.getDistance();
         for (int i = 0; i < rout.length - 1; i++) {
+            // 把本来要回到起点的距离改为前往终点
+            if (rout[i] != 0 && rout[i + 1] == 0) {
+                sum -= dist[rout[i]][rout[i + 1]];
+                sum += dist[rout[i]][dist.length - 1];
+            }
             sum += dist[rout[i]][rout[i + 1]];
         }
-        sum += dist[rout[rout.length - 1]][rout[0]];
+        //sum += dist[rout[rout.length - 1]][rout[0]]; 不需要回到起点
         return sum;
     }
 
@@ -159,9 +166,33 @@ public class SA {
         for (int i = 1; i < rout.length - 1; i++) {
             System.out.print("->" + "垃圾桶" + rout[i]);
         }
-        System.out.print("->" + rout[rout.length - 1] + "(终点A)" );
+        System.out.print("->" + rout[rout.length - 1] + "(终点A)");
     }
 
 
+    public List<List<Integer>> split_route(int[] rout_optimized, int n) {
+        ArrayList<List<Integer>> splited_list = new ArrayList<>();
+        ArrayList<Integer> temp = new ArrayList<>();
+        temp.add(0);
+        for (int i = 0; i < rout_optimized.length; i++) {
+            if (rout_optimized[i] == 0) {
+                continue;
+            }
+            temp.add(rout_optimized[i]);
 
+            //(i + 1) < rout_optimized.length 防止数组越界
+            if ((i + 1) < rout_optimized.length && rout_optimized[i + 1] == 0) {
+                temp.add(n + 1);
+                splited_list.add(temp);
+                temp = new ArrayList<>();
+                temp.add(0);
+            }
+            // 若序列的倒数第二位是垃圾桶, 则将该路径直接加入list
+            if (i == rout_optimized.length - 2 && rout_optimized[i + 1] != 0) {
+                //temp.add(n + 1);
+                splited_list.add(temp);
+            }
+        }
+        return splited_list;
+    }
 }
