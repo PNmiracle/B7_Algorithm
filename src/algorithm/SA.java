@@ -9,6 +9,11 @@ import java.util.*;
 public class SA {
 
     TspProblem problem;
+    public int n;
+
+    public void setN(int n) {
+        this.n = n;
+    }
 
     public SA(TspProblem problem) {
         this.problem = problem;
@@ -75,8 +80,20 @@ public class SA {
         return out;
     }
 
-    public int cost(int[] rout) {
+    public int cost(int[] rout, int[] weights, int maxCap) {
         int sum = 0;
+        /*计算该种解法(组合)的超重容量总和*/
+        //ArrayList<Integer> validCaps = new ArrayList<>();
+        int validCap = 0;
+        List<List<Integer>> list = SA.split_route(rout, n);
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 1; j < list.get(i).size() - 1; j++) {
+                maxCap -= weights[j];
+            }
+            if (maxCap < 0) {
+                validCap += (-maxCap);
+            }
+        }
         int[][] dist = problem.getDistance();
         for (int i = 0; i < rout.length - 1; i++) {
             // 把本来要回到起点的距离改为前往终点
@@ -86,6 +103,8 @@ public class SA {
             }
             sum += dist[rout[i]][rout[i + 1]];
         }
+        /*关键: 增加惩罚项*/
+        sum += validCap * 10;
         //sum += dist[rout[rout.length - 1]][rout[0]]; 不需要回到起点
         return sum;
     }
@@ -130,7 +149,7 @@ public class SA {
      * @param L    内循环次数
      * @return 输出得到的最优路径
      */
-    public int[] Sa_TSP(int[] rout, double T0, double d, double Tk, int L) {
+    public int[] Sa_TSP(int[] rout, double T0, double d, double Tk, int L, int[] weights, int maxCap) {
         // T0=1e5,d =1-7e-3, Tk=1e-3
         // T0=1e6,d =0.99, Tk=1e-6
         int[] bestpath, curentpath;
@@ -143,7 +162,7 @@ public class SA {
             int it = 0;        //为保证搜索过程的彻底,在同一温度下, 我们需要进行多次搜索,设置内循环的次数
             while (it < L) {
                 int[] update_path = swap(curentpath);//在当前解A附近随机产生新解B,此处用交换法
-                int delta = cost(update_path) - cost(curentpath);
+                int delta = cost(update_path, weights, maxCap) - cost(curentpath, weights, maxCap);
                 if (delta < 0) {//为负值，即结果成本降低了，则接受
                     curentpath = update_path;
                     bestpath = update_path;
@@ -160,8 +179,8 @@ public class SA {
         return bestpath;
     }
 
-    public void print(int rout[]) {
-        System.out.println("\n总路径长度：" + cost(rout));
+    public void print(int rout[], int[] weights, int maxCap) {
+        System.out.println("\n总路径长度：" + cost(rout, weights, maxCap));
         System.out.print("总转运路径：" + rout[0] + "(起点B)");
         for (int i = 1; i < rout.length - 1; i++) {
             System.out.print("->" + "垃圾桶" + rout[i]);
@@ -170,7 +189,7 @@ public class SA {
     }
 
 
-    public List<List<Integer>> split_route(int[] rout_optimized, int n) {
+    public static List<List<Integer>> split_route(int[] rout_optimized, int n) {
         ArrayList<List<Integer>> splited_list = new ArrayList<>();
         ArrayList<Integer> temp = new ArrayList<>();
         temp.add(0);

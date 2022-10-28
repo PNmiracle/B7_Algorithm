@@ -14,19 +14,22 @@ public class AppMain {
         System.out.println("请输入生成的垃圾桶的数目n: ");
         Scanner scanner = new Scanner(System.in);
         int n = scanner.nextInt();  //垃圾桶数目n
-        int t = 1000; // 每辆车的最大载重
-        int m = 15;  // B点有15辆垃圾车
+        int maxCap = 1000; // 每辆车的最大载重
+        System.out.println("请输入垃圾车数量m : ");
+        int m = scanner.nextInt();  // B点有15辆垃圾车
 
         /* ----------------------读入 or 随机生成  ------------------------- */
-        TspProblem problem = TspReader.readTSP("resources/eil51.txt", 12);
-        //TspProblem problem = TspRandomArr.generate_problem(n);
+        //TspProblem problem = TspReader.readTSP("resources/eil51.txt", 12);
+        TspProblem problem = TspRandomArr.generate_problem(n);
         int[] xCoors = problem.getxCoors();
         int[] yCoors = problem.getyCoors();
+        int[] weights = problem.getWeights();
         System.out.print("随机生成的n + 2个点坐标:");
         for (int i = 0; i < xCoors.length; i++) {
             System.out.print(" " + i + "-" + "(" + xCoors[i] + "," + yCoors[i] + ")");
         }
         SA sa = new SA(problem);
+        sa.setN(n);
         /*先用贪心的BFS找到一个比较好的种子解(一种组合), 也可以随机产生一个种子解
         int[] rout = sa.BFS();*/
         // rout.length - m - 1 = n
@@ -41,8 +44,8 @@ public class AppMain {
         double d = 0.99;        //温度衰减系数
         double Tk = 1e-6;       //最低温度
         int L = 20 * rout.length;//内循环次数, 也可以赋值为一个较大的常量
-        int[] rout_optimized = sa.Sa_TSP(rout, T0, d, Tk, L);
-        sa.print(rout_optimized);
+        int[] rout_optimized = sa.Sa_TSP(rout, T0, d, Tk, L, weights, maxCap);
+        sa.print(rout_optimized, weights, maxCap);
         List<List<Integer>> rout_list = sa.split_route(rout_optimized, n);
         System.out.println();
         for (List<Integer> rout_i : rout_list) {

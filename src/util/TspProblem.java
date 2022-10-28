@@ -3,6 +3,7 @@ package util;
 public class TspProblem {
     private int[] xCoors;
     private int[] yCoors;
+    private int[] weights;
     private int[][] distance; // æ‡¿Îæÿ’Û
 
 
@@ -10,6 +11,13 @@ public class TspProblem {
         super();
         this.xCoors = xCoors;
         this.yCoors = yCoors;
+        buildDistsArrays();
+    }
+    public TspProblem(int[] xCoors, int[] yCoors, int[] weights) {
+        super();
+        this.xCoors = xCoors;
+        this.yCoors = yCoors;
+        this.weights = weights;
         buildDistsArrays();
     }
 
@@ -36,6 +44,9 @@ public class TspProblem {
         return distance;
     }
 
+    public int[] getWeights() {
+        return weights;
+    }
 
     public static int EUC_2D_dist(int x1, int x2, int y1, int y2) {
         return (int) Math.sqrt(((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)));
