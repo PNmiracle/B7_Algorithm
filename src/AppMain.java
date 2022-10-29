@@ -46,7 +46,7 @@ public class AppMain {
         int belta = 10;             //惩罚函数的惩罚系数
         double T0 = 100;            //初始温度
         double alpha = 0.99;        //温度衰减系数
-        int maxOutIter = 1000;      //外循环的次数, 经过多次测试发现, 迭代700次左右就已经达到能够优化的极限
+        int maxOutIter = 1000;      //外循环的次数, 经过多次测试发现, 迭代600次左右就已经达到能够优化的极限
         int maxInIter = 300;        //内循环次数赋值为一个较大的常量
         /*调用sa_VCRP方法求得的最优路径*/
         int[] route_optimized = sa.sa_CVRP(route, T0, alpha, maxOutIter, maxInIter, weights, maxCap, belta);
