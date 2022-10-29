@@ -114,7 +114,7 @@ public class SA {
         Random random = new Random();
         for (int i = 0; i < maxOutIter; i++) {  // 当达到最低温度时停止循环
 
-            System.out.println("第" + (i) + "次迭代, 当前路径的总消耗(带惩罚项)为:" + cost_distance(curentpath, weights, maxCap, belta)); //此行可注释掉, 减少运行时间
+            System.out.println("第" + (i + 1) + "次迭代, 当前路径的总消耗(带惩罚项)为:" + cost_distance(curentpath, weights, maxCap, belta)); //此行可注释掉, 减少运行时间
             for (int j = 0; j < maxInIter; j++) {
                 int[] update_path = swap(curentpath);//在当前解A附近随机产生新解B,此处用交换法
                 int delta = cost_distance(update_path, weights, maxCap, belta) - cost_distance(curentpath, weights, maxCap, belta);
