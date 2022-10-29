@@ -31,7 +31,7 @@ public class TspRandomArr {
             xCoors[i - 1] = Integer.parseInt(split[0]);
             yCoors[i - 1] = Integer.parseInt(split[1]);
         }
-        /* ---------------------- 随机生成垃圾筒的重量, 假设至少为5kg, 最多为30kg且为整数 ------------------------- */
+/* ---------------------- 随机生成垃圾筒的重量, 假设至少为15kg, 最多为20kg且为整数 ------------------------- */
         Random out = new Random(System.currentTimeMillis());
         for (int i = 0; i < n; i++) {
             weights[i] = out.nextInt(5) + 15;

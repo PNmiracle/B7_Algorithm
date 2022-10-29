@@ -42,43 +42,8 @@ public class SA {
         }
     }
 
-    /**
-     * 广度优先搜索，输出贪心出来的最优路径，即每次都从起始点找附近最进的点去贪心遍历
-     *
-     * @return 输出得出的遍历节点顺序
-     */
-    public int[] BFS() {
-        Queue<Integer> q = new LinkedList<>();
-        q.add(0);
-        int[] vis = new int[problem.getxCoors().length];
-        int[] out = new int[problem.getxCoors().length];
-        vis[0] = 1;
-        int totalDist = 0;
-        int index = 1;
-        while (!q.isEmpty()) {
-            int front = q.poll();
-            int min = Integer.MAX_VALUE;
-            int sIdx = 0;
-            for (int i = 0; i < problem.getxCoors().length; i++) {
-                if (vis[i] == 0 && i != front && min > problem.getDistance()[front][i]) {
-                    min = problem.getDistance()[front][i];
-                    sIdx = i;
-                }
-            }
-            if (min != Integer.MAX_VALUE) {
-                vis[sIdx] = 1;
-                q.add(sIdx);
-                out[index] = sIdx;
-                index++;
-                totalDist += problem.getDistance()[front][sIdx];
-            }
-        }
-        q = null;
-        totalDist += problem.getDistance()[out[out.length - 1]][0];
-        return out;
-    }
 
-    public int cost_distance(int[] route, int[] weights, int maxCap) {
+    public int cost_distance(int[] route, int[] weights, int maxCap, int belta) {
         /*计算该种解法(组合)的超重容量总和*/
         int validCap = 0;
         List<List<Integer>> list = SA.split_route(route, n);
@@ -101,8 +66,8 @@ public class SA {
             }
         }
 
-        /*关键: 增加惩罚项*/
-        dist_penalty += validCap * 10;
+        /*关键: 增加惩罚项 , 惩罚系数belta = 10*/
+        dist_penalty += validCap * belta;
         return dist_penalty;
     }
 
@@ -117,19 +82,19 @@ public class SA {
      * 实现交叉互换，随机出两个不相同随机数，然后交换那两个位置的点
      * 此外还有移位法, 倒置法等
      *
-     * @param rout
+     * @param route
      * @return 输出经过交换的新路径
      */
-    public int[] swap(int[] rout) {
+    public int[] swap(int[] route) {
         Random random = new Random();
-        //int r1 = random.nextInt(rout.length);   //随机产生一个范围在[0..rout.length)的整数
-        int r1 = random.nextInt(rout.length - 2) + 1;   //随机产生一个范围在[1..rout.length - 1)的整数
-        //int r2 = random.nextInt(rout.length);
-        int r2 = random.nextInt(rout.length - 2) + 1;
+        //int r1 = random.nextInt(route.length);   //随机产生一个范围在[0..route.length)的整数
+        int r1 = random.nextInt(route.length - 2) + 1;   //随机产生一个范围在[1..route.length - 1)的整数
+        //int r2 = random.nextInt(route.length);
+        int r2 = random.nextInt(route.length - 2) + 1;
         while (r1 == r2) {
-            r2 = random.nextInt(rout.length - 2) + 1;   //保证随机数r1, r2不同
+            r2 = random.nextInt(route.length - 2) + 1;   //保证随机数r1, r2不同
         }
-        int[] change = copyRout(rout);
+        int[] change = copyRout(route);
         int tmp = change[r1];
         change[r1] = change[r2];
         change[r2] = tmp;
@@ -138,14 +103,9 @@ public class SA {
 
     /**
      * 模拟退火算法SA
-     *
-     * @param route 输入用于迭代的路径
-     * @param T0    初始温度
-     * @return 输出得到的最优路径
      */
-    public int[] Sa_TSP(int[] route, double T0, double alpha, int maxOutIter, int maxInIter, int[] weights, int maxCap) {
-        // T0=1e5,d =1-7e-3, Tk=1e-3
-        // T0=1e6,d =0.99, Tk=1e-6
+    public int[] sa_CVRP(int[] route, double T0, double alpha, int maxOutIter, int maxInIter, int[] weights, int maxCap, int belta) {
+
         int[] bestpath, curentpath;
         //t:此刻的温度变量
         double t = T0;
@@ -155,7 +115,7 @@ public class SA {
         for (int i = 0; i < maxOutIter; i++) {  // 当达到最低温度时停止循环
             for (int j = 0; j < maxInIter; j++) {
                 int[] update_path = swap(curentpath);//在当前解A附近随机产生新解B,此处用交换法
-                int delta = cost_distance(update_path, weights, maxCap) - cost_distance(curentpath, weights, maxCap);
+                int delta = cost_distance(update_path, weights, maxCap, belta) - cost_distance(curentpath, weights, maxCap, belta);
                 if (delta < 0) {//为负值，即结果成本降低了，则接受
                     curentpath = update_path;
                     bestpath = update_path;
@@ -171,13 +131,17 @@ public class SA {
         return bestpath;
     }
 
-    public void print(int rout[], int[] weights, int maxCap) {
-        System.out.println("\n总路径长度：" + cost_distance(rout, weights, maxCap));
-        System.out.print("总转运路径：" + rout[0] + "(起点B)");
-        for (int i = 1; i < rout.length - 1; i++) {
-            System.out.print("->" + "垃圾桶" + rout[i]);
+    public void print_total(int route[], int[] weights, int maxCap, int belta) {
+        System.out.println("\n总路径长度：" + cost_distance(route, weights, maxCap, belta));
+        System.out.print("总转运路径：" + route[0] + "号结点(起点B)");
+        for (int i = 1; i < route.length - 1; i++) {
+            if (route[i] == 0) {
+                System.out.print("->" + "0号结点(起点B)");
+            } else {
+                System.out.print("->" + "垃圾桶" + route[i] + "号");
+            }
         }
-        System.out.print("->" + rout[rout.length - 1] + "(终点A)");
+        System.out.print("->" + route[route.length - 1] + "号结点(终点A)");
     }
 
 
