@@ -57,6 +57,7 @@ public class SA {
         int[] disPenaltyArr = new int[2];
         /*计算该种解法(组合)的超重容量总和*/
         int validCap = 0;
+        int cap_temp = maxCap;
         List<List<Integer>> list = SA.split_route(route, n);
         // 遍历所有垃圾车的路径
         for (int i = 0; i < list.size(); i++) {
@@ -67,6 +68,7 @@ public class SA {
             if (maxCap < 0) {
                 validCap += (-maxCap);
             }
+            maxCap = cap_temp;  //换了下一辆车,容量要及时更新, 不然一直减会出错
         }
         int[][] dist = problem.getDistance();
         int totalDist = 0;
