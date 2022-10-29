@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class AppMain {
     public static void main(String[] args) {
-/* ---------------------- 输入参数n, maxCap, m ------------------------- */
+        /* ---------------------- 输入参数n, maxCap, m ------------------------- */
         /*一共随机生成n + 2个点, 编号分别为[0...n+1], 其中0为B点(垃圾车起始点), n + 1为终点A(垃圾填埋点),
         其他点[1...n]为垃圾点...*/
         System.out.println("请输入生成的垃圾桶的数目n: ");
@@ -21,7 +21,7 @@ public class AppMain {
         int m = scanner.nextInt();  // B点有m辆垃圾车
 
 
-/* ---------------------- 随机生成坐标, 垃圾桶重量, 打印 ------------------------- */
+        /* ---------------------- 随机生成坐标, 垃圾桶重量, 打印 ------------------------- */
         CVRP_problem problem = BuildRandom.generate_problem(n); //随机生成n + 2个不重复点的坐标、垃圾的重量(15到20kg),都在100*100的方格内
         /*获取并打印n+2个点的坐标, n个垃圾桶的重量*/
         int[] xCoors = problem.getxCoors();
@@ -38,7 +38,7 @@ public class AppMain {
         System.out.println();
 
 
-/* ---------------------- 调用模拟退火算法 ------------------------- */
+        /* ---------------------- 调用模拟退火算法 ------------------------- */
         SA sa = new SA(problem);    //造一个SA算法类的对象
         sa.setN(n);                 //将垃圾桶的数量n传进去
 
@@ -57,7 +57,12 @@ public class AppMain {
         /*打印总路径长度和总路径*/
         int[] distPenaltyArr = sa.dist_penalty(route_optimized, weights, maxCap, beta);
         int total_dist = distPenaltyArr[0]; //不带惩罚项的总路径
-        System.out.println("\n总路径长度为: " + total_dist + "\n");
+        int dist_penalty = distPenaltyArr[1];
+        if (dist_penalty == total_dist) {
+            System.out.println("\n总路径长度为: " + total_dist + "\n");
+        } else {
+            System.out.println("\n垃圾车一趟容量不够");//当最后得到结果,带惩罚项的路径 > 总路径长度时, 说明垃圾车容量不够
+        }
         sa.print_total(route_optimized);
 
         /*将总路径划分为每辆车的路径*/
@@ -70,7 +75,7 @@ public class AppMain {
         long after_sa = System.currentTimeMillis();     //结束的毫秒数
         long total_time = after_sa - before_sa;         //总用时
 
-/* ---------------------- 输出模拟退火算法用时 ------------------------- */
+        /* ---------------------- 输出模拟退火算法用时 ------------------------- */
         System.out.println("\n模拟退火算法用时: " + (total_time) + "ms");
     }
 }
