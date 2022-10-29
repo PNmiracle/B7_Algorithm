@@ -1,19 +1,19 @@
 package util;
 
-public class TspProblem {
+public class CVRP_problem {
     private int[] xCoors;
     private int[] yCoors;
     private int[] weights;
     private int[][] distance; // æ‡¿Îæÿ’Û
 
 
-    public TspProblem(int[] xCoors, int[] yCoors) {
+    public CVRP_problem(int[] xCoors, int[] yCoors) {
         super();
         this.xCoors = xCoors;
         this.yCoors = yCoors;
         buildDistsArrays();
     }
-    public TspProblem(int[] xCoors, int[] yCoors, int[] weights) {
+    public CVRP_problem(int[] xCoors, int[] yCoors, int[] weights) {
         super();
         this.xCoors = xCoors;
         this.yCoors = yCoors;

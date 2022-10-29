@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 
 public class TspReader {
 	
-	public static TspProblem readTSP(String filename, int numCities) throws IOException {
+	public static CVRP_problem readTSP(String filename, int numCities) throws IOException {
 		// 读取数据
 		int[] x;
 		int[] y;
@@ -35,13 +35,13 @@ public class TspReader {
 			y[i] = Integer.valueOf(strcol[2]);// y坐标
 		}
 		data.close();
-		TspProblem problem = new TspProblem(x,y);
+		CVRP_problem problem = new CVRP_problem(x,y);
 		return problem;
 	}
 	
 
 	public static void main(String[] args) throws IOException {
-		TspProblem problem = TspReader.readTSP("resources/eil23.txt", 23);
+		CVRP_problem problem = TspReader.readTSP("resources/eil23.txt", 23);
 		int[] x = problem.getxCoors();
 		for (int i=0;i<x.length;i++) {
 			System.out.println(x[i]);

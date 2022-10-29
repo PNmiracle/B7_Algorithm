@@ -18,7 +18,7 @@ public class Task3 {
     private static int[] test = new int[maxMine];
 
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
+
         int validNumber = 0;
         for (int i = 0; i < cols; i++) {
             for (int k = 0; k < rows; k++) {
