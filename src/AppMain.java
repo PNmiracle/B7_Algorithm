@@ -56,9 +56,9 @@ public class AppMain {
         System.out.println();
         for (int i = 0; i < paths_list.size(); i++) {
             List<Integer> path_i = paths_list.get(i);
-            System.out.println("第" + i + "辆车的路径:" + path_i);
+            System.out.println("第" + i + "号车的路径:" + path_i);
         }
-        long after_sa = System.currentTimeMillis();     //结束的毫秒数
+        long after_sa = System.currentTimeMillis();     //结束的毫秒 数
         long total_time = after_sa - before_sa;         //总用时
         System.out.println("\n模拟退火算法用时: " + (total_time) + "ms");
     }
