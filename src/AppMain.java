@@ -26,7 +26,11 @@ public class AppMain {
         int[] weights = problem.getWeights();
         System.out.print("随机生成的n + 2个点坐标:");
         for (int i = 0; i < xCoors.length; i++) {
-            System.out.print(" " + i + "-" + "(" + xCoors[i] + "," + yCoors[i] + ")");
+            if (i == 0 || i == xCoors.length - 1) {
+                System.out.print(" " + i + "-" + "(" + xCoors[i] + "," + yCoors[i] + ")");
+            } else {
+                System.out.print(" " + i + "-" + "(" + xCoors[i] + "," + yCoors[i] + "," + weights[i - 1] + ")");
+            }
         }
         SA sa = new SA(problem);
         sa.setN(n);
@@ -40,11 +44,12 @@ public class AppMain {
         long before_sa = System.currentTimeMillis();
         //生成的解 m-1个0和 [1..n]组成的一个随机排序
         sa.build_random_sequence(rout, m);
-        double T0 = 1e6;        //初始温度
-        double d = 0.99;        //温度衰减系数
-        double Tk = 1e-6;       //最低温度
-        int L = 20 * rout.length;//内循环次数, 也可以赋值为一个较大的常量
-        int[] rout_optimized = sa.Sa_TSP(rout, T0, d, Tk, L, weights, maxCap);
+        int belta = 10;
+        double T0 = 100;        //初始温度
+        double alpha = 0.99;        //温度衰减系数
+        int maxOutIter = 2000;
+        int maxInIter = 300;  //内循环次数赋值为一个较大的常量
+        int[] rout_optimized = sa.Sa_TSP(rout, T0, alpha, maxOutIter, maxInIter, weights, maxCap);
         sa.print(rout_optimized, weights, maxCap);
         List<List<Integer>> rout_list = sa.split_route(rout_optimized, n);
         System.out.println();

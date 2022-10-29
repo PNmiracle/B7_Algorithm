@@ -34,7 +34,7 @@ public class TspRandomArr {
         /* ---------------------- 随机生成垃圾筒的重量, 假设至少为5kg, 最多为30kg且为整数 ------------------------- */
         Random out = new Random(System.currentTimeMillis());
         for (int i = 0; i < n; i++) {
-            weights[i] = out.nextInt(25) + 5;
+            weights[i] = out.nextInt(5) + 15;
         }
         ranCorArrs.add(xCoors);
         ranCorArrs.add(yCoors);
