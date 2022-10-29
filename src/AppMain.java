@@ -47,15 +47,16 @@ public class AppMain {
 
         long before_sa = System.currentTimeMillis();    //开始的毫秒数
         sa.build_random_sequence(route, m);  //生成的解 m-1个0和 [1..n]组成的一个随机排序
-        int belta = 10;             //惩罚函数的惩罚系数
         double T0 = 100;            //初始温度
         double alpha = 0.99;        //温度衰减系数
         int maxOutIter = 1000;      //外循环的次数, 经过多次测试发现, 迭代600次左右就已经达到能够优化的极限
         int maxInIter = 300;        //内循环次数赋值为一个较大的常量
+        int beta = 10;             //惩罚函数的惩罚系数: 每超重1kg, 惩罚总路径长度+10
         /*调用sa_VCRP方法求得的最优路径*/
-        int[] route_optimized = sa.sa_CVRP(route, T0, alpha, maxOutIter, maxInIter, weights, maxCap, belta);
+        int[] route_optimized = sa.sa_CVRP(route, T0, alpha, maxOutIter, maxInIter, weights, maxCap, beta);
         /*打印总路径长度和总路径*/
-        int total_dist = sa.dist_penalty(route_optimized, weights, maxCap, belta);
+        int[] distPenaltyArr = sa.dist_penalty(route_optimized, weights, maxCap, beta);
+        int total_dist = distPenaltyArr[0]; //不带惩罚项的总路径
         System.out.println("\n总路径长度为: " + total_dist + "\n");
         sa.print_total(route_optimized);
 
@@ -66,7 +67,7 @@ public class AppMain {
             List<Integer> path_i = paths_list.get(i);
             System.out.println("第" + i + "号车的路径:" + path_i);
         }
-        long after_sa = System.currentTimeMillis();     //结束的毫秒 数
+        long after_sa = System.currentTimeMillis();     //结束的毫秒数
         long total_time = after_sa - before_sa;         //总用时
 
 /* ---------------------- 输出模拟退火算法用时 ------------------------- */

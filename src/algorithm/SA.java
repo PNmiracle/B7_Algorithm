@@ -45,14 +45,15 @@ public class SA {
     }
 
     /**
-     * 计算此种解法的总路径长度(带惩罚项)
+     * 计算此种解法的 带惩罚项的花费 和 总路径长度
      * @param route         此种解法
      * @param weights       垃圾桶重量数组
      * @param maxCap        垃圾车最大容量
-     * @param belta         惩罚系数
-     * @return distPenalty 带惩罚项的总路径长度
+     * @param beta         惩罚系数
+     * @return distPenalty[0] 总路径长度, 带惩罚项的总花费
      */
-    public int dist_penalty(int[] route, int[] weights, int maxCap, int belta) {
+    public int[] dist_penalty(int[] route, int[] weights, int maxCap, int beta) {
+        int[] disPenaltyArr = new int[2];
         /*计算该种解法(组合)的超重容量总和*/
         int validCap = 0;
         List<List<Integer>> list = SA.split_route(route, n);
@@ -67,17 +68,19 @@ public class SA {
             }
         }
         int[][] dist = problem.getDistance();
-        int distPenalty = 0;
+        int totalDist = 0;
         for (int i = 0; i < list.size(); i++) {
             List<Integer> path_i = list.get(i);
             for (int j = 0; j < path_i.size() - 1; j++) {
-                distPenalty += dist[path_i.get(j)][path_i.get(j + 1)];
+                totalDist += dist[path_i.get(j)][path_i.get(j + 1)];
             }
         }
 
         /*关键: 增加惩罚项 , 惩罚系数belta = 10*/
-        distPenalty += validCap * belta;
-        return distPenalty;
+        disPenaltyArr[0] = totalDist;
+        int totalDistPenalty = validCap * beta + totalDist;
+        disPenaltyArr[1] = totalDistPenalty;
+        return disPenaltyArr;
     }
     /**
      * 复制数组
@@ -124,21 +127,27 @@ public class SA {
      * @param maxInIter     内层循环次数
      * @param weights       垃圾桶的重量数组
      * @param maxCap        垃圾车的最大容量
-     * @param belta         惩罚系数
+     * @param beta         惩罚系数
      *
      * @return 输出遗传退火算法优化后得到的较优解
      */
-    public int[] sa_CVRP(int[] route, double T0, double alpha, int maxOutIter, int maxInIter, int[] weights, int maxCap, int belta) {
+    public int[] sa_CVRP(int[] route, double T0, double alpha, int maxOutIter, int maxInIter, int[] weights, int maxCap, int beta) {
 
         int[] bestpath, curentpath;     //优化的最优路径和当前路径(抽象解)
         double t = T0;                  //t:此刻的温度变量
         bestpath = curentpath = copy_route(route);// 起始时刻:复制种子解route到curentpath,和 bestpath中
         Random rd = new Random();
-        for (int i = 0; i < maxOutIter; i++) {  // 当达到最低温度时停止循环
-            System.out.println("第" + (i + 1) + "次迭代, 当前路径的总消耗(带惩罚项)为:" + dist_penalty(curentpath, weights, maxCap, belta));        //TODO: 此行可注释掉, 减少运行时间
+        for (int i = 0; i < maxOutIter; i++) {  // 设置的外循环次数为1000
+            int[] distPenaltyArr = dist_penalty(curentpath, weights, maxCap, beta);
+            System.out.println("第" + (i + 1) + "次迭代, 当前路径的总消耗(带惩罚项)为:" + distPenaltyArr[1] + "  总路径长度为:" + distPenaltyArr[0]);        //TODO: 此行可注释掉, 减少运行时间
             for (int j = 0; j < maxInIter; j++) {
                 int[] update_path = swap(curentpath);//在当前解A附近随机产生新解B,此处用交换法
-                int delta = dist_penalty(update_path, weights, maxCap, belta) - dist_penalty(curentpath, weights, maxCap, belta);
+                int[] distPenaltyArr_upd = dist_penalty(update_path, weights, maxCap, beta);
+                int cost_update = distPenaltyArr_upd[1];    //distPenaltyArr_upd[1]为加上惩罚项的花费
+                int[] distPenaltyArr_cur = dist_penalty(curentpath, weights, maxCap, beta);
+                int cost_current = distPenaltyArr_cur[1];
+
+                int delta = cost_update - cost_current;
                 if (delta < 0) {//为负值，即结果成本降低了，则接受
                     curentpath = update_path;
                     bestpath = update_path;

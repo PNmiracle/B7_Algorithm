@@ -51,9 +51,13 @@ public class BuildRandom {
         ranList.add(weights);
         return ranList;
     }
-
+    /**
+     * 生成一个CVRP问题
+     * @param n
+     * @return util.CVRP_problem
+     */
     public static CVRP_problem generate_problem(int n) {
-        List<int[]> list = BuildRandom.build_Rd_Coors_weights(n);
+        List<int[]> list = BuildRandom.build_Rd_Coors_weights(n);   //生成随机坐标和重量的集合
         int[] xCoors = list.get(0);
         int[] yCoors = list.get(1);
         int[] weights = list.get(2);
