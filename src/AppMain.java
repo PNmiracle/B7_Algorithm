@@ -50,7 +50,10 @@ public class AppMain {
         /*调用sa_VCRP方法求得的最优路径*/
         int[] route_optimized = sa.sa_CVRP(route, T0, alpha, maxOutIter, maxInIter, weights, maxCap, belta);
         /*打印总路径长度和总路径*/
-        sa.print_total(route_optimized, weights, maxCap, belta);
+        int total_dist = sa.cost_distance(route_optimized, weights, maxCap, belta);
+        System.out.println("\n总路径长度为: " + total_dist + "\n");
+        sa.print_total(route_optimized);
+
         /*将总路径划分为每辆车的路径*/
         List<List<Integer>> paths_list = sa.split_route(route_optimized, n);
         System.out.println();
