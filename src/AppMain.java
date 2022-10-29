@@ -19,7 +19,7 @@ public class AppMain {
         int m = scanner.nextInt();  // B点有m辆垃圾车
 
         TspProblem problem = TspRandomArr.generate_problem(n); //随机生成n + 2个不重复点的坐标、垃圾的重量(15到20kg),都在100*100的方格内
-        /*获取*/
+        /*获取并打印n+2个点的坐标, n个垃圾桶的重量*/
         int[] xCoors = problem.getxCoors();
         int[] yCoors = problem.getyCoors();
         int[] weights = problem.getWeights();
@@ -35,8 +35,6 @@ public class AppMain {
         /* ---------------------- 调用模拟退火算法 ------------------------- */
         SA sa = new SA(problem);
         sa.setN(n);
-        /*先用贪心的BFS找到一个比较好的种子解(一种组合), 也可以随机产生一个种子解
-        int[] route = sa.BFS();*/
 
         int[] route = new int[n + 2 + m - 1];//Java中数组默认初始化rout[i] = 0; 解的长度route.length=m+1+n
         route[route.length - 1] = n + 1;     //解的最后一位赋值为n+1号结点(终点A), 第一位为0号结点(起点B)
