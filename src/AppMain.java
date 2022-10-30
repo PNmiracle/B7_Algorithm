@@ -37,7 +37,6 @@ public class AppMain {
         }
         System.out.println();
 
-
         /* ---------------------- 调用模拟退火算法 ------------------------- */
         SA sa = new SA(problem);    //造一个SA算法类的对象
         sa.setN(n);                 //将垃圾桶的数量n传进去
