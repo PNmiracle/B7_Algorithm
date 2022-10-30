@@ -19,29 +19,24 @@ public class SA {
 
     /**
      * 给route[]创建随机序列(route[0]和route[n+1]不变)
-     * 给route[1..n]赋值为[1...n]的不重复的序列,
+     * 给route[1..倒数第二个]赋值为[1...n]的不重复的序列,
      * 每次选取之后就要收缩随机数的值域
      * @param route 一种解
      * @param m     垃圾车的数量
      * 垃圾车数目 n = route.length - m - 1, route.length = n + m - 1 + 2
      */
     public void build_random_sequence(int[] route, int m) {
-        int n = route.length - m - 1;   //新建局部变量n,后面对n--不改变成员变量n的值
-        int[] numbers = new int[route.length - 2];  //给route[1..倒数第二个]其中随机n个赋值为不同的[1..n], 其他全为0
-         /*numbers[0..n-1]顺序存放[1..n]*/
-        for (int i = 0; i < n; i++) {
-            numbers[i] = i + 1;
+        ArrayList<Integer> numbers = new ArrayList<>(route.length - 2);
+        for (int i = 0; i < (route.length - 2); i++) {
+            numbers.add(i + 1); //numbers动态数组存放[1..route.length - 2]
         }
-        //int n_temp = n;  //记录此时n的值, 作为循环长度, 不改变n_temp
-        int j = numbers.length - 1;     //j 一开始指向numbers[]的末尾
-        for (int i = 1; i < (route.length - 1); i++) {
-            //Math.random() :[0, 1) 的double
-            int r = (int) (Math.random() * numbers.length);  //r:[0..numbers.length - 1] 的整数
-            route[i] = numbers[r];          // 给rout[1..n + m - 1]赋值为[1...n]的不重复的序列,
-            /**每次生成的下标是有可能重复的，但是由于numbers数组里该下标对应的值每抽中一次，
-             就被踢出去了（替换成了j位置上的值），所以最终结果并不会重复*/
-            numbers[r] = numbers[j];
-            j--;
+        for (int i = 1; i <= (route.length - 2); i++) {
+            int r = (int) (Math.random() * numbers.size());  //r:随机数的坐标,范围不断缩小[0..numbers.size - 1]
+            route[i] = numbers.get(r);
+            numbers.remove(r);      //相当于用完一次就划掉
+            if (route[i] > n) {     //超出范围的就赋值为0 (截断掉)
+                route[i] = 0;
+            }
         }
     }
 
