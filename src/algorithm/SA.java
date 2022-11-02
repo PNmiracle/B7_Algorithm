@@ -21,9 +21,10 @@ public class SA {
      * 给route[]创建随机序列(route[0]和route[n+1]不变)
      * 给route[1..倒数第二个]赋值为[1...n]的不重复的序列,
      * 每次选取之后就要收缩随机数的值域
+     *
      * @param route 一种解
      * @param m     垃圾车的数量
-     * 垃圾车数目 n = route.length - m - 1, route.length = n + m - 1 + 2
+     *              垃圾车数目 n = route.length - m - 1, route.length = n + m - 1 + 2
      */
     public void build_random_sequence(int[] route, int m) {
         ArrayList<Integer> numbers = new ArrayList<>(route.length - 2);
@@ -42,10 +43,11 @@ public class SA {
 
     /**
      * 计算此种解法的 带惩罚项的花费 和 总路径长度
-     * @param route         此种解法
-     * @param weights       垃圾桶重量数组
-     * @param maxCap        垃圾车最大容量
-     * @param beta         惩罚系数
+     *
+     * @param route   此种解法
+     * @param weights 垃圾桶重量数组
+     * @param maxCap  垃圾车最大容量
+     * @param beta    惩罚系数
      * @return distPenalty[0] 总路径长度, 带惩罚项的总花费
      */
     public int[] dist_penalty(int[] route, int[] weights, int maxCap, int beta) {
@@ -80,8 +82,10 @@ public class SA {
         disPenaltyArr[1] = totalDistPenalty;
         return disPenaltyArr;
     }
+
     /**
      * 复制数组
+     *
      * @param route
      * @return int[]
      */
@@ -118,15 +122,15 @@ public class SA {
 
     /**
      * 模拟退火算法SA
-     * @param route         初始解
-     * @param T0            初始温度
-     * @param alpha         温度衰减系数
-     * @param maxOutIter    外层循环次数
-     * @param maxInIter     内层循环次数
-     * @param weights       垃圾桶的重量数组
-     * @param maxCap        垃圾车的最大容量
-     * @param beta         惩罚系数
      *
+     * @param route      初始解
+     * @param T0         初始温度
+     * @param alpha      温度衰减系数
+     * @param maxOutIter 外层循环次数
+     * @param maxInIter  内层循环次数
+     * @param weights    垃圾桶的重量数组
+     * @param maxCap     垃圾车的最大容量
+     * @param beta       惩罚系数
      * @return 输出遗传退火算法优化后得到的较优解
      */
     public int[] sa_CVRP(int[] route, double T0, double alpha, int maxOutIter, int maxInIter, int[] weights, int maxCap, int beta) {
@@ -139,7 +143,19 @@ public class SA {
             int[] distPenaltyArr = dist_penalty(curentpath, weights, maxCap, beta);
             System.out.println("第" + (i + 1) + "次迭代, 当前路径的总消耗(带惩罚项)为:" + distPenaltyArr[1] + "  总路径长度为:" + distPenaltyArr[0]);        //TODO: 此行可注释掉, 减少运行时间
             for (int j = 0; j < maxInIter; j++) {
-                int[] update_path = swap(curentpath);//在当前解A附近随机产生新解B,此处用交换法
+                if (i == 0) {
+                    System.out.println("第一次外层循环: 内存循环第" + j + "次迭代, 当前路径的总消耗(带惩罚项)为:" + distPenaltyArr[1] + "  总路径长度为:" + distPenaltyArr[0]);
+                }   //TODO: 内存循环打印, 看一看总消耗(带惩罚项)和总路径的在前期的不同
+                int[] update_path;
+                int p1 = rd.nextInt();
+                if (p1 < 0.33) {
+                    update_path = swap(curentpath);}//在当前解A附近随机产生新解B,此处用交换法
+                else if (p1 < 0.66) {
+                    update_path = shifting(curentpath);}
+                else {
+
+                    update_path = reversion(curentpath);
+                }
                 int[] distPenaltyArr_upd = dist_penalty(update_path, weights, maxCap, beta);
                 int cost_update = distPenaltyArr_upd[1];    //distPenaltyArr_upd[1]为加上惩罚项的花费
                 int[] distPenaltyArr_cur = dist_penalty(curentpath, weights, maxCap, beta);
@@ -161,8 +177,70 @@ public class SA {
         return bestpath;
     }
 
+    public int[] shifting(int[] curentpath) {
+        int len = curentpath.length;
+        Random rd = new Random();
+        int a = rd.nextInt(len);
+        int b;
+        int c;
+        while ((b = rd.nextInt(len)) == a) {
+        }
+        while ((c = rd.nextInt(len)) == a && c == b) {
+
+        }
+        int[] sortedArr = {a, b, c};
+        Arrays.sort(sortedArr);
+        a = sortedArr[0]; b = sortedArr[1]; c = sortedArr[2];
+        ArrayList<Integer> list = new ArrayList<>(len);
+        ArrayList<Integer> temp_b_c = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            list.add(i);
+        }
+        for (int i = a; i <= b; i++) {
+            temp_b_c.add(list.remove(i));
+        }
+
+        int[] change = copy_route(curentpath);
+        int diff = b - a;
+        for (int i = 0; i < list.size(); i++) {
+            change[i] = list.get(i);
+        }
+        for (int i = c - diff  + 1; i <= (temp_b_c.size() + c -diff); i++) {
+            change[i] = temp_b_c.get(i - c - 1 + diff);
+        }
+
+        return change;
+    }
+
+    /**
+     * 倒置法
+     *
+     * @param curentpath
+     * @return int[]
+     */
+    public int[] reversion(int[] curentpath) {
+        int len = curentpath.length;
+        Random rd = new Random();
+        int a = rd.nextInt(len);
+        int b;
+        while ((b = rd.nextInt(len)) == a) {
+
+        }
+        if (a > b) {
+            int temp = b;
+            b = a;
+            a = temp;
+        }
+        int[] change = copy_route(curentpath);
+        for (int i = a, j = b; i <= b || j >= a; i++, j--) {
+            change[i] = curentpath[j];
+        }
+        return change;
+    }
+
     /**
      * 输入当前解打印总路径
+     *
      * @param route 输入当前解
      */
     public void print_total(int route[]) {
@@ -179,9 +257,10 @@ public class SA {
 
     /**
      * 将抽象的解切分为具体每辆车的转运路径
+     *
      * @param route 输入一个抽象的解
      * @param n     垃圾桶数量
-     * @return  splited_list: 每辆车的转运路径构成集合的集合
+     * @return splited_list: 每辆车的转运路径构成集合的集合
      */
     public static List<List<Integer>> split_route(int[] route, int n) {
         ArrayList<List<Integer>> splited_list = new ArrayList<>(); //每辆车的转运路径构成集合的集合
