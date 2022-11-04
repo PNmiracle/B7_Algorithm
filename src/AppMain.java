@@ -44,7 +44,7 @@ public class AppMain {
         int[] route = new int[n + 2 + m - 1];//Java中数组默认初始化rout[i] = 0; 解的长度route.length=m+1+n
         route[route.length - 1] = n + 1;     //解的最后一位赋值为n+1号结点(终点A), 第一位为0号结点(起点B)
 
-        long before_sa = System.currentTimeMillis();    //开始的毫秒数
+        long before_sa = System.currentTimeMillis();
         sa.build_random_sequence(route, m);  //生成的解 m-1个0和 [1..n]组成的一个随机排序
         double T0 = 100;            //初始温度
         double alpha = 0.99;        //温度衰减系数
@@ -71,7 +71,7 @@ public class AppMain {
             List<Integer> path_i = paths_list.get(i);
             System.out.println("第" + i + "号车的路径:" + path_i);
         }
-        long after_sa = System.currentTimeMillis();     //结束的毫秒数
+        long after_sa = System.currentTimeMillis();
         long total_time = after_sa - before_sa;         //总用时
 
         /* ---------------------- 输出模拟退火算法用时 ------------------------- */
